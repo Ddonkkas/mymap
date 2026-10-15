@@ -12,7 +12,8 @@
         }
 
         body {
-            font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+            font-family: 'Pretendard', 'Malgun Gothic', '맑은 고딕', sans-serif;
+            background-color: #f8f9fa;
         }
 
         .container {
@@ -22,56 +23,101 @@
 
         /* 왼쪽 패널: 탭 버튼 및 결과 리스트 */
         .left-panel {
-            width: 360px;
-            background-color: #f8f9fa;
-            padding: 20px;
+            width: 370px;
+            background-color: #ffffff;
+            padding: 24px 20px;
             display: flex;
             flex-direction: column;
-            border-right: 1px solid #e0e0e0;
+            border-right: 1px solid #e9ecef;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.03);
+            z-index: 10;
+        }
+
+        .panel-header {
+            margin-bottom: 20px;
         }
 
         .panel-title {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 16px;
-            color: #222;
+            font-size: 22px;
+            font-weight: 800;
+            color: #1a1a1a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        /* 탭 버튼 영역 */
+        .panel-subtitle {
+            font-size: 13px;
+            color: #868e96;
+            margin-top: 4px;
+        }
+
+        /* 운동 테마 탭 그룹 */
         .tab-group {
             display: flex;
-            gap: 8px;
-            margin-bottom: 12px;
+            gap: 10px;
+            margin-bottom: 16px;
         }
 
+        /* 운동 느낌이 나는 카드형 탭 버튼 */
         .tab-btn {
             flex: 1;
-            padding: 12px;
+            padding: 12px 10px;
             font-size: 14px;
-            font-weight: bold;
-            border: 1px solid #d0d7de;
-            border-radius: 8px;
-            background-color: #ffffff;
-            color: #555;
+            font-weight: 700;
+            border: 2px solid #edf2f7;
+            border-radius: 12px;
+            background-color: #f8fafc;
+            color: #4a5568;
             cursor: pointer;
-            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        .tab-btn .tab-icon {
+            font-size: 24px;
+            display: inline-block;
+            transition: transform 0.2s ease;
         }
 
         .tab-btn:hover {
-            background-color: #f1f3f5;
+            background-color: #f1f5f9;
+            transform: translateY(-2px);
         }
 
-        /* 활성화된 탭 스타일 */
-        .tab-btn.active {
-            background-color: #2b8a3e;
+        .tab-btn:hover .tab-icon {
+            transform: scale(1.15);
+        }
+
+        /* 활성화된 탭 스타일 (농구장: 활기찬 오렌지 테마) */
+        #tabBasketball.active {
+            background: linear-gradient(135deg, #ff922b 0%, #f76707 100%);
             color: #ffffff;
-            border-color: #2b8a3e;
+            border-color: #f76707;
+            box-shadow: 0 4px 12px rgba(247, 103, 7, 0.3);
+        }
+
+        /* 활성화된 탭 스타일 (헬스장: 건강한 에메랄드/그린 테마) */
+        #tabGym.active {
+            background: linear-gradient(135deg, #20c997 0%, #099268 100%);
+            color: #ffffff;
+            border-color: #099268;
+            box-shadow: 0 4px 12px rgba(9, 146, 104, 0.3);
         }
 
         .status-message {
             font-size: 13px;
-            color: #666;
-            margin-bottom: 10px;
+            color: #495057;
+            background-color: #e7f5ff;
+            border-left: 3px solid #339af0;
+            padding: 8px 12px;
+            border-radius: 0 6px 6px 0;
+            margin-bottom: 14px;
             line-height: 1.4;
         }
 
@@ -80,31 +126,43 @@
             list-style: none;
             overflow-y: auto;
             flex: 1;
+            padding-right: 4px;
+        }
+
+        .result-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .result-list::-webkit-scrollbar-thumb {
+            background-color: #dee2e6;
+            border-radius: 4px;
         }
 
         .result-item {
             padding: 14px;
             background-color: #ffffff;
             border: 1px solid #e9ecef;
-            border-radius: 8px;
+            border-radius: 10px;
             margin-bottom: 10px;
             cursor: pointer;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            transition: all 0.2s ease;
         }
 
         .result-item:hover {
-            border-color: #2b8a3e;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+            border-color: #ced4da;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
 
         .result-item h4 {
             font-size: 15px;
             color: #212529;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
+            font-weight: 700;
         }
 
         .result-item p {
-            font-size: 13px;
+            font-size: 12.5px;
             color: #6c757d;
             line-height: 1.4;
         }
@@ -112,18 +170,29 @@
         .result-item .badge {
             display: inline-block;
             font-size: 11px;
-            background-color: #ffe8cc;
+            padding: 3px 8px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .result-item .badge-basketball {
+            background-color: #fff4e6;
             color: #d9480f;
-            padding: 2px 6px;
-            border-radius: 4px;
-            margin-bottom: 6px;
-            font-weight: bold;
+            border: 1px solid #ffd8a8;
+        }
+
+        .result-item .badge-gym {
+            background-color: #e6fcf5;
+            color: #0ca678;
+            border: 1px solid #c3fae8;
         }
 
         .result-item .phone {
             font-size: 12px;
-            color: #2b8a3e;
-            margin-top: 4px;
+            color: #2f9e44;
+            margin-top: 5px;
+            font-weight: 600;
         }
 
         /* 오른쪽 패널: 지도 */
@@ -139,10 +208,10 @@
 
         /* 마커 클릭 말풍선(InfoWindow) 커스텀 스타일 */
         .info-bubble {
-            padding: 10px 14px;
+            padding: 12px 14px;
             font-size: 13px;
-            min-width: 180px;
-            max-width: 250px;
+            min-width: 190px;
+            max-width: 260px;
             line-height: 1.4;
         }
 
@@ -164,12 +233,21 @@
     <div class="container">
         <!-- 왼쪽 패널 -->
         <div class="left-panel">
-            <h1 class="panel-title">내 주변 운동 스팟</h1>
+            <div class="panel-header">
+                <h1 class="panel-title">⚡ 내 주변 운동 스팟</h1>
+                <p class="panel-subtitle">가까운 코트와 헬스장을 한눈에 찾아보세요</p>
+            </div>
 
-            <!-- 탭 버튼 -->
+            <!-- 스포티한 탭 버튼 2개 -->
             <div class="tab-group">
-                <button type="button" class="tab-btn active" id="tabPark" onclick="switchCategory('공원')">농구장(공원)</button>
-                <button type="button" class="tab-btn" id="tabGym" onclick="switchCategory('헬스장')">헬스장</button>
+                <button type="button" class="tab-btn active" id="tabBasketball" onclick="switchCategory('농구장')">
+                    <span class="tab-icon">🏀</span>
+                    <span>농구장</span>
+                </button>
+                <button type="button" class="tab-btn" id="tabGym" onclick="switchCategory('헬스장')">
+                    <span class="tab-icon">🏋️</span>
+                    <span>헬스장</span>
+                </button>
             </div>
 
             <p class="status-message" id="statusMessage">현재 위치를 확인하는 중입니다...</p>
@@ -194,18 +272,18 @@
         let userPosition = null;
         let markers = [];
         let activeInfoWindow = null;
-        let currentCategory = '공원';
+        let currentCategory = '농구장';
 
-        // 1. 농구공 마커 이미지 (농구장 공원용 SVG Data URI)
+        // 1. 농구공 마커 이미지 (SVG Data URI)
         const basketballSvg = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><circle cx="18" cy="18" r="16" fill="%23f76707" stroke="%23ffffff" stroke-width="2"/><line x1="2" y1="18" x2="34" y2="18" stroke="%23ffffff" stroke-width="2"/><line x1="18" y1="2" x2="18" y2="34" stroke="%23ffffff" stroke-width="2"/><path d="M7 6 A17 17 0 0 1 7 30" fill="none" stroke="%23ffffff" stroke-width="2"/><path d="M29 6 A17 17 0 0 0 29 30" fill="none" stroke="%23ffffff" stroke-width="2"/></svg>`;
 
-        // 2. 아령 마커 이미지 (헬스장용 SVG Data URI)
-        const dumbbellSvg = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><circle cx="18" cy="18" r="16" fill="%232b8a3e" stroke="%23ffffff" stroke-width="2"/><rect x="8" y="13" width="4" height="10" rx="1.5" fill="%23ffffff"/><rect x="24" y="13" width="4" height="10" rx="1.5" fill="%23ffffff"/><rect x="11" y="16.5" width="14" height="3" fill="%23ffffff"/></svg>`;
+        // 2. 아령 마커 이미지 (SVG Data URI)
+        const dumbbellSvg = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><circle cx="18" cy="18" r="16" fill="%23099268" stroke="%23ffffff" stroke-width="2"/><rect x="8" y="13" width="4" height="10" rx="1.5" fill="%23ffffff"/><rect x="24" y="13" width="4" height="10" rx="1.5" fill="%23ffffff"/><rect x="11" y="16.5" width="14" height="3" fill="%23ffffff"/></svg>`;
 
         // 카카오맵 SDK 로드 후 초기화
         kakao.maps.load(function() {
             const mapContainer = document.getElementById('map');
-            const defaultPosition = new kakao.maps.LatLng(37.566826, 126.9786567); // 서울 기본 위치
+            const defaultPosition = new kakao.maps.LatLng(37.566826, 126.9786567); // 기본 위치
             const mapOptions = {
                 center: defaultPosition,
                 level: 5
@@ -222,7 +300,7 @@
                 }
             });
 
-            // 사용자 위치 확인
+            // 내 위치 확인 시작
             initUserLocation();
         });
 
@@ -239,13 +317,13 @@
 
                         map.setCenter(userPosition);
 
-                        // 내 현재 위치 마커 표시
+                        // 내 위치 기본 마커 표시
                         new kakao.maps.Marker({
                             position: userPosition,
                             map: map
                         });
 
-                        statusEl.innerText = '내 위치 주변의 농구 가능한 공원/체육시설을 검색합니다.';
+                        statusEl.innerText = '내 주변 5km 이내의 농구 코트를 찾는 중입니다...';
                         executeCategorySearch(currentCategory);
                     },
                     function(error) {
@@ -256,7 +334,7 @@
                     }
                 );
             } else {
-                statusEl.innerText = '이 브라우저는 위치 정보를 지원하지 않아 기본 위치로 검색합니다.';
+                statusEl.innerText = '위치 정보를 지원하지 않아 기본 위치로 검색합니다.';
                 userPosition = new kakao.maps.LatLng(37.566826, 126.9786567);
                 executeCategorySearch(currentCategory);
             }
@@ -266,47 +344,46 @@
         function switchCategory(categoryName) {
             currentCategory = categoryName;
 
-            const parkBtn = document.getElementById('tabPark');
+            const basketballBtn = document.getElementById('tabBasketball');
             const gymBtn = document.getElementById('tabGym');
             const statusEl = document.getElementById('statusMessage');
 
-            if (categoryName === '공원') {
-                parkBtn.classList.add('active');
+            if (categoryName === '농구장') {
+                basketballBtn.classList.add('active');
                 gymBtn.classList.remove('active');
-                statusEl.innerText = '공원 및 체육시설 내 농구장 스팟을 검색 중입니다...';
+                statusEl.innerText = '농구 시설이 있는 공원 및 코트를 검색 중입니다...';
             } else {
                 gymBtn.classList.add('active');
-                parkBtn.classList.remove('active');
+                basketballBtn.classList.remove('active');
                 statusEl.innerText = '주변 헬스장을 검색 중입니다...';
             }
 
             executeCategorySearch(categoryName);
         }
 
-        // 카테고리별 검색 분기
+        // 카테고리 검색 분기
         function executeCategorySearch(category) {
             if (!placesService) return;
 
-            // 공원 탭인 경우: 농구 시설이 확인되는 키워드로 다중 검색 실행
-            if (category === '공원') {
-                searchBasketballParks();
+            if (category === '농구장') {
+                searchBasketballSpots();
             } else {
                 searchGyms();
             }
         }
 
-        // 농구 시설이 있는 공원/체육시설 집중 검색
-        function searchBasketballParks() {
+        // 농구 시설이 확인된 공원/코트만 선별 검색
+        function searchBasketballSpots() {
             clearExistingResults();
 
             const searchOptions = {
                 location: userPosition,
-                radius: 6000, // 6km 반경으로 조금 넉넉히 탐색
+                radius: 5000, // 반경 5km 탐색
                 sort: kakao.maps.services.SortBy.ACCURACY
             };
 
-            // 농구 시설과 관련된 대표 키워드들
-            const targetKeywords = ['농구장', '공원 농구장', '야외농구장'];
+            // 농구 시설을 콕 집어내는 연관 키워드 배열
+            const targetKeywords = ['농구장', '공원 농구장', '야외농구장', '체육공원 농구'];
             const aggregatedResults = [];
             const seenPlaceIds = new Set();
             let completedRequests = 0;
@@ -317,44 +394,62 @@
 
                     if (status === kakao.maps.services.Status.OK) {
                         data.forEach(item => {
-                            // 중복 장소 제거 및 농구장/공원/체육 관련 장소만 필터링
-                            if (!seenPlaceIds.has(item.id)) {
+                            // 1. 중복 제거
+                            if (seenPlaceIds.has(item.id)) return;
+
+                            // 2. 농구 시설 및 운동 관련 장소인지 정밀 검증 필터
+                            const name = item.place_name;
+                            const category = item.category_name || '';
+
+                            // 이름이나 카테고리에 농구, 구장, 체육, 코트 등의 운동 키워드가 명시된 곳만 통과
+                            const isBasketballFacility = 
+                                name.includes('농구') || 
+                                name.includes('구장') || 
+                                name.includes('코트') || 
+                                name.includes('체육공원') ||
+                                category.includes('체육시설') ||
+                                category.includes('농구장');
+
+                            if (isBasketballFacility) {
                                 seenPlaceIds.add(item.id);
                                 aggregatedResults.push(item);
                             }
                         });
                     }
 
-                    // 모든 키워드 검색 요청이 끝났을 때 결과 렌더링
+                    // 모든 키워드 검색 완료 시 화면 표시
                     if (completedRequests === targetKeywords.length) {
+                        const statusEl = document.getElementById('statusMessage');
                         if (aggregatedResults.length > 0) {
-                            displayResults(aggregatedResults, '공원');
-                            document.getElementById('statusMessage').innerText = `농구 시설이 확인된 장소 ${aggregatedResults.length}곳을 찾았습니다!`;
+                            displayResults(aggregatedResults, '농구장');
+                            statusEl.innerText = `🏀 농구 시설이 확인된 스팟 ${aggregatedResults.length}곳을 찾았습니다!`;
                         } else {
-                            document.getElementById('placesList').innerHTML = '<li style="padding:20px; text-align:center; color:#888;">반경 내에 등록된 농구 시설(공원 농구장 등)을 찾을 수 없습니다.</li>';
-                            document.getElementById('statusMessage').innerText = '주변에 농구 시설 정보가 등록된 곳이 없습니다.';
+                            document.getElementById('placesList').innerHTML = '<li style="padding:24px 10px; text-align:center; color:#888; font-size:13px;">반경 5km 내에 등록된 농구 시설(공원 농구장 등)을 찾지 못했습니다.</li>';
+                            statusEl.innerText = '주변에 농구 시설 정보가 등록된 곳이 없습니다.';
                         }
                     }
                 }, searchOptions);
             });
         }
 
-        // 헬스장 일반 검색
+        // 헬스장 검색
         function searchGyms() {
             clearExistingResults();
 
             const searchOptions = {
                 location: userPosition,
-                radius: 4000,
+                radius: 3500,
                 sort: kakao.maps.services.SortBy.ACCURACY
             };
 
             placesService.keywordSearch('헬스장', function(data, status) {
+                const statusEl = document.getElementById('statusMessage');
                 if (status === kakao.maps.services.Status.OK) {
                     displayResults(data, '헬스장');
-                    document.getElementById('statusMessage').innerText = `주변 헬스장 ${data.length}곳을 찾았습니다.`;
+                    statusEl.innerText = `🏋️ 주변 헬스장 ${data.length}곳을 찾았습니다!`;
                 } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
-                    document.getElementById('placesList').innerHTML = '<li style="padding:20px; text-align:center; color:#888;">주변에 검색 결과가 없습니다.</li>';
+                    document.getElementById('placesList').innerHTML = '<li style="padding:24px 10px; text-align:center; color:#888; font-size:13px;">주변에 헬스장 검색 결과가 없습니다.</li>';
+                    statusEl.innerText = '주변에 헬스장이 없습니다.';
                 } else {
                     alert('검색 중 오류가 발생했습니다.');
                 }
@@ -375,12 +470,12 @@
             document.getElementById('placesList').innerHTML = '';
         }
 
-        // 검색 결과 지도 및 리스트에 반영
+        // 검색 결과 표시
         function displayResults(places, category) {
             const listEl = document.getElementById('placesList');
             const bounds = new kakao.maps.LatLngBounds();
 
-            const iconUrl = category === '공원' ? basketballSvg : dumbbellSvg;
+            const iconUrl = category === '농구장' ? basketballSvg : dumbbellSvg;
             const iconSize = new kakao.maps.Size(34, 34);
             const iconOption = { offset: new kakao.maps.Point(17, 17) };
             const markerImage = new kakao.maps.MarkerImage(iconUrl, iconSize, iconOption);
@@ -389,7 +484,6 @@
                 const place = places[i];
                 const placePosition = new kakao.maps.LatLng(place.y, place.x);
 
-                // 마커 생성
                 const marker = new kakao.maps.Marker({
                     position: placePosition,
                     map: map,
@@ -398,7 +492,6 @@
                 markers.push(marker);
                 bounds.extend(placePosition);
 
-                // 말풍선 내용
                 const addressText = place.road_address_name || place.address_name;
                 const infoContent = `
                     <div class="info-bubble">
@@ -414,7 +507,7 @@
                     map.panTo(placePosition);
                 });
 
-                // 리스트 아이템 추가
+                // 리스트 아이템 클릭 시 말풍선 및 중심 이동
                 const itemEl = createListItem(place, category);
                 itemEl.onclick = function() {
                     activeInfoWindow.setContent(infoContent);
@@ -428,17 +521,19 @@
             map.setBounds(bounds);
         }
 
-        // 리스트 항목 DOM 요소 생성
+        // 리스트 항목 생성
         function createListItem(place, category) {
             const item = document.createElement('li');
             item.className = 'result-item';
 
             const addressText = place.road_address_name || place.address_name;
-            const phoneText = place.phone ? `<p class="phone">${place.phone}</p>` : '';
-            const badgeText = category === '공원' ? '<span class="badge">🏀 농구 시설 확인</span>' : '<span class="badge" style="background:#e6fcf5; color:#0ca678;">🏋️ 헬스장</span>';
+            const phoneText = place.phone ? `<p class="phone">📞 ${place.phone}</p>` : '';
+            const badgeHtml = category === '농구장' 
+                ? '<span class="badge badge-basketball">🏀 야외 코트/농구시설</span>' 
+                : '<span class="badge badge-gym">🏋️ 피트니스 / 헬스장</span>';
 
             item.innerHTML = `
-                ${badgeText}
+                ${badgeHtml}
                 <h4>${place.place_name}</h4>
                 <p>${addressText}</p>
                 ${phoneText}
