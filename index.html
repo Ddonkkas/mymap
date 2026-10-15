@@ -41,13 +41,13 @@
         .tab-group {
             display: flex;
             gap: 8px;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
 
         .tab-btn {
             flex: 1;
             padding: 12px;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: bold;
             border: 1px solid #d0d7de;
             border-radius: 8px;
@@ -72,6 +72,7 @@
             font-size: 13px;
             color: #666;
             margin-bottom: 10px;
+            line-height: 1.4;
         }
 
         /* 검색 결과 리스트 */
@@ -108,6 +109,17 @@
             line-height: 1.4;
         }
 
+        .result-item .badge {
+            display: inline-block;
+            font-size: 11px;
+            background-color: #ffe8cc;
+            color: #d9480f;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
         .result-item .phone {
             font-size: 12px;
             color: #2b8a3e;
@@ -130,7 +142,7 @@
             padding: 10px 14px;
             font-size: 13px;
             min-width: 180px;
-            max-width: 240px;
+            max-width: 250px;
             line-height: 1.4;
         }
 
@@ -156,7 +168,7 @@
 
             <!-- 탭 버튼 -->
             <div class="tab-group">
-                <button type="button" class="tab-btn active" id="tabPark" onclick="switchCategory('공원')">공원</button>
+                <button type="button" class="tab-btn active" id="tabPark" onclick="switchCategory('공원')">농구장(공원)</button>
                 <button type="button" class="tab-btn" id="tabGym" onclick="switchCategory('헬스장')">헬스장</button>
             </div>
 
@@ -184,7 +196,7 @@
         let activeInfoWindow = null;
         let currentCategory = '공원';
 
-        // 1. 농구공 마커 이미지 (공원용 SVG Data URI)
+        // 1. 농구공 마커 이미지 (농구장 공원용 SVG Data URI)
         const basketballSvg = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><circle cx="18" cy="18" r="16" fill="%23f76707" stroke="%23ffffff" stroke-width="2"/><line x1="2" y1="18" x2="34" y2="18" stroke="%23ffffff" stroke-width="2"/><line x1="18" y1="2" x2="18" y2="34" stroke="%23ffffff" stroke-width="2"/><path d="M7 6 A17 17 0 0 1 7 30" fill="none" stroke="%23ffffff" stroke-width="2"/><path d="M29 6 A17 17 0 0 0 29 30" fill="none" stroke="%23ffffff" stroke-width="2"/></svg>`;
 
         // 2. 아령 마커 이미지 (헬스장용 SVG Data URI)
@@ -227,26 +239,26 @@
 
                         map.setCenter(userPosition);
 
-                        // 내 현재 위치 마커 표시 (기본 파란 핀)
+                        // 내 현재 위치 마커 표시
                         new kakao.maps.Marker({
                             position: userPosition,
                             map: map
                         });
 
-                        statusEl.innerText = '내 위치 주변을 검색합니다.';
-                        searchPlacesByCategory(currentCategory);
+                        statusEl.innerText = '내 위치 주변의 농구 가능한 공원/체육시설을 검색합니다.';
+                        executeCategorySearch(currentCategory);
                     },
                     function(error) {
                         console.error('위치 접근 실패:', error);
-                        statusEl.innerText = '위치 권한이 거부되어 기본 위치(서울) 주변을 검색합니다.';
+                        statusEl.innerText = '위치 권한 거부로 기본 위치(서울) 주변을 검색합니다.';
                         userPosition = new kakao.maps.LatLng(37.566826, 126.9786567);
-                        searchPlacesByCategory(currentCategory);
+                        executeCategorySearch(currentCategory);
                     }
                 );
             } else {
                 statusEl.innerText = '이 브라우저는 위치 정보를 지원하지 않아 기본 위치로 검색합니다.';
                 userPosition = new kakao.maps.LatLng(37.566826, 126.9786567);
-                searchPlacesByCategory(currentCategory);
+                executeCategorySearch(currentCategory);
             }
         }
 
@@ -254,37 +266,94 @@
         function switchCategory(categoryName) {
             currentCategory = categoryName;
 
-            // 탭 활성화 상태 UI 업데이트
             const parkBtn = document.getElementById('tabPark');
             const gymBtn = document.getElementById('tabGym');
+            const statusEl = document.getElementById('statusMessage');
 
             if (categoryName === '공원') {
                 parkBtn.classList.add('active');
                 gymBtn.classList.remove('active');
+                statusEl.innerText = '공원 및 체육시설 내 농구장 스팟을 검색 중입니다...';
             } else {
                 gymBtn.classList.add('active');
                 parkBtn.classList.remove('active');
+                statusEl.innerText = '주변 헬스장을 검색 중입니다...';
             }
 
-            searchPlacesByCategory(categoryName);
+            executeCategorySearch(categoryName);
         }
 
-        // 카테고리별 장소 검색
-        function searchPlacesByCategory(category) {
+        // 카테고리별 검색 분기
+        function executeCategorySearch(category) {
             if (!placesService) return;
 
-            // 검색 옵션: 내 위치 기준 반경 4000m 우선 정렬
+            // 공원 탭인 경우: 농구 시설이 확인되는 키워드로 다중 검색 실행
+            if (category === '공원') {
+                searchBasketballParks();
+            } else {
+                searchGyms();
+            }
+        }
+
+        // 농구 시설이 있는 공원/체육시설 집중 검색
+        function searchBasketballParks() {
+            clearExistingResults();
+
+            const searchOptions = {
+                location: userPosition,
+                radius: 6000, // 6km 반경으로 조금 넉넉히 탐색
+                sort: kakao.maps.services.SortBy.ACCURACY
+            };
+
+            // 농구 시설과 관련된 대표 키워드들
+            const targetKeywords = ['농구장', '공원 농구장', '야외농구장'];
+            const aggregatedResults = [];
+            const seenPlaceIds = new Set();
+            let completedRequests = 0;
+
+            targetKeywords.forEach(keyword => {
+                placesService.keywordSearch(keyword, function(data, status) {
+                    completedRequests++;
+
+                    if (status === kakao.maps.services.Status.OK) {
+                        data.forEach(item => {
+                            // 중복 장소 제거 및 농구장/공원/체육 관련 장소만 필터링
+                            if (!seenPlaceIds.has(item.id)) {
+                                seenPlaceIds.add(item.id);
+                                aggregatedResults.push(item);
+                            }
+                        });
+                    }
+
+                    // 모든 키워드 검색 요청이 끝났을 때 결과 렌더링
+                    if (completedRequests === targetKeywords.length) {
+                        if (aggregatedResults.length > 0) {
+                            displayResults(aggregatedResults, '공원');
+                            document.getElementById('statusMessage').innerText = `농구 시설이 확인된 장소 ${aggregatedResults.length}곳을 찾았습니다!`;
+                        } else {
+                            document.getElementById('placesList').innerHTML = '<li style="padding:20px; text-align:center; color:#888;">반경 내에 등록된 농구 시설(공원 농구장 등)을 찾을 수 없습니다.</li>';
+                            document.getElementById('statusMessage').innerText = '주변에 농구 시설 정보가 등록된 곳이 없습니다.';
+                        }
+                    }
+                }, searchOptions);
+            });
+        }
+
+        // 헬스장 일반 검색
+        function searchGyms() {
+            clearExistingResults();
+
             const searchOptions = {
                 location: userPosition,
                 radius: 4000,
                 sort: kakao.maps.services.SortBy.ACCURACY
             };
 
-            placesService.keywordSearch(category, function(data, status) {
+            placesService.keywordSearch('헬스장', function(data, status) {
                 if (status === kakao.maps.services.Status.OK) {
-                    displayResults(data, category);
+                    displayResults(data, '헬스장');
+                    document.getElementById('statusMessage').innerText = `주변 헬스장 ${data.length}곳을 찾았습니다.`;
                 } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
-                    clearExistingResults();
                     document.getElementById('placesList').innerHTML = '<li style="padding:20px; text-align:center; color:#888;">주변에 검색 결과가 없습니다.</li>';
                 } else {
                     alert('검색 중 오류가 발생했습니다.');
@@ -308,12 +377,9 @@
 
         // 검색 결과 지도 및 리스트에 반영
         function displayResults(places, category) {
-            clearExistingResults();
-
             const listEl = document.getElementById('placesList');
             const bounds = new kakao.maps.LatLngBounds();
 
-            // 카테고리별 마커 이미지 세팅
             const iconUrl = category === '공원' ? basketballSvg : dumbbellSvg;
             const iconSize = new kakao.maps.Size(34, 34);
             const iconOption = { offset: new kakao.maps.Point(17, 17) };
@@ -332,7 +398,7 @@
                 markers.push(marker);
                 bounds.extend(placePosition);
 
-                // 마커 클릭 시 띄울 정보 팝업
+                // 말풍선 내용
                 const addressText = place.road_address_name || place.address_name;
                 const infoContent = `
                     <div class="info-bubble">
@@ -341,15 +407,15 @@
                     </div>
                 `;
 
-                // 마커 클릭 이벤트 연결
+                // 마커 클릭 시 말풍선
                 kakao.maps.event.addListener(marker, 'click', function() {
                     activeInfoWindow.setContent(infoContent);
                     activeInfoWindow.open(map, marker);
                     map.panTo(placePosition);
                 });
 
-                // 리스트 아이템 생성 및 추가
-                const itemEl = createListItem(place);
+                // 리스트 아이템 추가
+                const itemEl = createListItem(place, category);
                 itemEl.onclick = function() {
                     activeInfoWindow.setContent(infoContent);
                     activeInfoWindow.open(map, marker);
@@ -359,19 +425,20 @@
                 listEl.appendChild(itemEl);
             }
 
-            // 검색 결과 위치들이 모두 보이도록 화면 축척/중심 자동 조정
             map.setBounds(bounds);
         }
 
         // 리스트 항목 DOM 요소 생성
-        function createListItem(place) {
+        function createListItem(place, category) {
             const item = document.createElement('li');
             item.className = 'result-item';
 
             const addressText = place.road_address_name || place.address_name;
             const phoneText = place.phone ? `<p class="phone">${place.phone}</p>` : '';
+            const badgeText = category === '공원' ? '<span class="badge">🏀 농구 시설 확인</span>' : '<span class="badge" style="background:#e6fcf5; color:#0ca678;">🏋️ 헬스장</span>';
 
             item.innerHTML = `
+                ${badgeText}
                 <h4>${place.place_name}</h4>
                 <p>${addressText}</p>
                 ${phoneText}
